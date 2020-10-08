@@ -1,0 +1,176 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title  >Hello to nginx</title>
+        <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <style>
+textarea
+    {
+    border:1px solid #999999;
+    width:100%;
+    margin:5px 0;
+    padding:3px;
+
+}
+                      body,html{
+                          margin: 0 auto;
+
+                      }
+                      .up-header {
+                          width:600px;
+                          text-align: center;
+
+                      }
+                      .up-content {
+                          min-height: 200px;
+                          border: 1px solid #CCCCCC;
+                          display: flex;
+                          flex-direction: column;
+                          justify-content: center;
+                          align-items: center;
+                          background-color: #FAFAFA;
+                          color: #999;
+                          font-size: 20px;
+                          text-align: center;
+
+                      }
+                      .up-area {
+                          border: 2px dashed #ccc;
+                          margin: 10px 20px 20px 20px;
+                          width: 300px;
+                          min-height: 200px;
+                          line-height: 100px;
+                          background-color: #fff;
+
+                      }
+                      .list-group {
+                          margin: 0px auto;;
+                          width: 200px;
+                          min-height: 100px;
+                          padding: 10px;
+
+                      }
+                      img {
+                          max-width: 100%;
+
+                      }
+                      .btn {
+
+
+                      }
+                      .close {
+                          margin-left: 550px;
+                          margin-top: -20px;
+
+                      }
+
+        </style>
+        <script  src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+        <script type="text/javascript">
+            $(document).ready(function(){
+                console.log("doc ready")
+                $("#submit").click(function(){
+                    console.log("submit click!")
+                    console.log($("#str1").val())
+                    console.log($("#str2").val())
+                    $("p").first().text("ok")
+                    var usingEng = "1" 
+                    if ($('#useEng').is(":checked"))
+                    {
+                        console.log("use eng:")
+                    }else{
+                        console.log("not use eng:")
+                        usingEng = "0" 
+
+                    }
+                    //var formData = {str1:$("#str1").val(),str2:$("#str2").val(),name:1,eng:usingEng}
+                    //var formData = {str1:$("#str1").val(),str2:$("#str2").val(),name:1,eng:usingEng}
+                    var formData = {str1:$("#str1").val(),str2:$("#str2").val(),eng:usingEng}
+                    $.ajax({
+                        url: "/ct",        
+                        type:"POST",
+                        data:formData, 
+
+                        success: function( data,textState,jqXHR  ) {
+                            data = JSON.parse(data)
+                            $("#words").text(""); 
+                            console.log( data); // server response
+                            console.log("words:", data.WExist); // server response
+                            console.log("same per:", data.Percent); // server response
+                            if(data.WExist){
+                                $("#words").text("重复出现:");
+                                data.WExist.forEach(function(item,index){
+                                    var txt = $("#words").text();
+                                    txt +=  item + " "
+                                    $("#words").text(txt); 
+                                })
+                            } 
+                            $("#words").text(data.WExists);
+                            $("#samePer").text("雷同率:" + data.Percent);
+                            $("#num1").text("字数1:"+data.Num1);
+                            $("#num2").text("字数2:"+data.Num2);
+                        },
+                        error:function (jqXHR, textStatus, errorThrown)
+                        {
+                            console.log("error:",textStatus)     
+
+                        }
+
+                    });
+
+                }) 
+                $(".dragFile").on("dragenter", function(e){
+                    e.preventDefault();
+
+                });
+                $('.dragFile').on('dragover', (e) => {
+                    e.preventDefault();
+
+                })
+                $('.dragFile').on('drop', (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    var files = e.dataTransfer.files; //获取文件
+                    appendFile(files, '.list-drag')
+
+                })
+
+                function appendFile (files, listName) {
+                    for( file of files  ) {
+                        let url = window.URL.createObjectURL(file);
+                        let liStr = `
+                            <li class="list-group-item">
+                            <div>
+                            <img src="${url}" alt="文件" />
+                            </div>
+                            </li>
+                        `;
+                        $(listName).append(liStr);
+                    }
+                }
+
+            })
+        </script>
+    </head>
+    <body>
+        英文:<INPUT id="useEng"  type="CHECKBOX" checked/>
+        <br>
+        <form action="106.52.153.207:8881" method="POST">
+            <p>文本1</p>
+            <textarea id="str1" class="textarea"></textarea>
+            <br>
+            <p>文本2</p>
+            <textarea id="str2" class="textarea"></textarea>
+            <br>
+            <INPUT id="submit" type="button" text="gogogo" value="比较"/>
+            <br>
+        </form>
+        <div id="res"><p></p></div>
+        <div ><p id="num1"></p></div>
+        <div ><p id="num2"></p></div>
+        <div ><p id="words"></p></div>
+        <div ><p id="samePer"></p></div>
+
+    </body>
+</html>
