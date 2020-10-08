@@ -5,6 +5,11 @@
 
 go get ./...
 
+# BUILD
+go build service/main.go
+
 # 使用
+运行 main
+./main
 客户端见client 文件夹
 命令行见testlocal.sh
